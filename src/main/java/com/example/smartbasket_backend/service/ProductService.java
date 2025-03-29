@@ -5,6 +5,7 @@ import com.example.smartbasket_backend.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -12,6 +13,13 @@ public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+
+
+    // Получение всех товаров
+    public List<Product> getAllProducts() {
+        return productRepository.findAll();
+    }
+
 
     // Добавление нового товара
     public Product addProduct(Product product) {
@@ -37,4 +45,5 @@ public class ProductService {
     public void deleteProduct(Long id) {
         productRepository.deleteById(id); // Удаляем товар по ID
     }
+
 }

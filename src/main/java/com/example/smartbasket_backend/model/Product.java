@@ -1,36 +1,30 @@
 package com.example.smartbasket_backend.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
-
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
-@Table(name = "products") // Явное указание таблицы в БД
 public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Product name must not be blank")
     private String name;
-
     private String description;
-
-    @Positive(message = "Price must be greater than zero")
     private Double price;
 
+    @ElementCollection
+    private List<String> imageUrls; // Список URL для фото
+
     // Конструкторы, геттеры и сеттеры
+    public Product() {}
 
-    public Product() {
-    }
-
-    public Product(Long id, String name, String description, Double price) {
-        this.id = id;
+    public Product(String name, String description, Double price, List<String> imageUrls) {
         this.name = name;
         this.description = description;
         this.price = price;
+        this.imageUrls = imageUrls;
     }
 
     public Long getId() {
@@ -63,5 +57,13 @@ public class Product {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public List<String> getImageUrls() {
+        return imageUrls;
+    }
+
+    public void setImageUrls(List<String> imageUrls) {
+        this.imageUrls = imageUrls;
     }
 }
