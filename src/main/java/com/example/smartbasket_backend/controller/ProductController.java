@@ -5,9 +5,10 @@ import com.example.smartbasket_backend.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/products")
@@ -21,39 +22,36 @@ public class ProductController {
     public Product addProduct(@RequestBody Product product) {
         return productService.addProduct(product);
     }
-
     // Получение товара по ID
     @GetMapping("/{id}")
     public Product getProduct(@PathVariable Long id) {
         return productService.getProduct(id);
     }
 
+    // Загрузка изображения для продукта
+    @PostMapping("/{id}/upload-image")
+    public ResponseEntity<String> uploadImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        try {
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest().body("No file selected");
+            }
+
+            System.out.println("Received file for product ID: " + id);
+            System.out.println("File name: " + file.getOriginalFilename());
+            System.out.println("File size: " + file.getSize());
+
+            // Здесь можно добавить логику для сохранения файла
+
+            return ResponseEntity.ok("File uploaded successfully!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Server error while uploading the file");
+        }
+    }
+
     // Получение всех товаров
     @GetMapping
     public List<Product> getAllProducts() {
         return productService.getAllProducts();
-    }
-
-    // Обновление товара
-    @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
-        Optional<Product> existingProduct = productService.getProductById(id);
-        if (existingProduct.isPresent()) {
-            product.setId(id);
-            Product updatedProduct = productService.updateProduct(product);
-            return ResponseEntity.ok(updatedProduct);
-        }
-        return ResponseEntity.notFound().build();
-    }
-
-    // Удаление товара
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        Optional<Product> existingProduct = productService.getProductById(id);
-        if (existingProduct.isPresent()) {
-            productService.deleteProduct(id);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
     }
 }

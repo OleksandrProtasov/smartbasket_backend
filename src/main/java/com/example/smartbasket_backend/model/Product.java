@@ -1,32 +1,23 @@
 package com.example.smartbasket_backend.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 public class Product {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
     private String description;
-    private Double price;
+    private double price;
 
     @ElementCollection
-    private List<String> imageUrls; // Список URL для фото
+    private List<String> imageUrls = new ArrayList<>(); // Инициализируем список, чтобы избежать `NullPointerException`
 
-    // Конструкторы, геттеры и сеттеры
-    public Product() {}
-
-    public Product(String name, String description, Double price, List<String> imageUrls) {
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.imageUrls = imageUrls;
-    }
-
+    // Геттеры и сеттеры
     public Long getId() {
         return id;
     }
@@ -51,11 +42,11 @@ public class Product {
         this.description = description;
     }
 
-    public Double getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
