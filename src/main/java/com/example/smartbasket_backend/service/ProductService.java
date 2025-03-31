@@ -36,6 +36,11 @@ public class ProductService {
     public Optional<Product> getProductById(Long id) {
         return productRepository.findById(id);
     }
+    // Метод обновления продукта
+    public Product updateProduct(Product product) {
+        return productRepository.save(product); // Сохраняем изменения в базе данных
+    }
+
 
     // Сохранение изображения для продукта
     public String saveImage(Long productId, MultipartFile file) throws IOException {
