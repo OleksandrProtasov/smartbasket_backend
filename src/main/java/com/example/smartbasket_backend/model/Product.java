@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@Table(name = "products")
 public class Product {
 
     @Id
@@ -17,7 +18,7 @@ public class Product {
     @ElementCollection
     @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
     @Column(name = "image_url")
-    private List<String> imageUrls;  // Массив URL-ов изображений
+    private List<String> imageUrl; // Массив URL-ов изображений
 
     // getters and setters
 
@@ -54,10 +55,10 @@ public class Product {
     }
 
     public List<String> getImageUrls() {
-        return imageUrls;
+        return imageUrl;
     }
 
     public void setImageUrls(List<String> imageUrls) {
-        this.imageUrls = imageUrls;
+        this.imageUrl = imageUrls;
     }
 }

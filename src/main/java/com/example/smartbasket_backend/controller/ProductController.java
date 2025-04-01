@@ -30,44 +30,35 @@ public class ProductController {
     }
 
     // Загрузка изображения для продукта
-    @PostMapping("/{id}/upload-images")
-    public ResponseEntity<String> uploadImages(@PathVariable Long id, @RequestParam("files") MultipartFile[] files) {
+    @PostMapping("/{id}/upload-image")
+    public ResponseEntity<String> uploadImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
         try {
-            if (files.length == 0) {
-                return ResponseEntity.badRequest().body("No files selected");
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest().body("No file selected");
             }
 
+            // Путь, по которому будет храниться изображение
+            String fileName = file.getOriginalFilename();
+            String uploadDir = "uploads/";
+            String filePath = uploadDir + fileName;
+
+            // Здесь сохраняем файл в папку uploads
+            file.transferTo(new java.io.File(filePath));
+
+            // Находим товар по ID
             Product product = productService.getProduct(id);
             if (product == null) {
                 return ResponseEntity.notFound().build();
             }
 
-            List<String> imageUrls = product.getImageUrls();  // Получаем текущие URL-ы изображений
+            // Сохраняем путь к изображению в товаре
+            product.setImageUrl(filePath);
+            productService.updateProduct(product);  // Этот метод должен обновить товар в базе данных
 
-            for (MultipartFile file : files) {
-                if (!file.isEmpty()) {
-                    // Генерация уникального имени для файла (чтобы избежать перезаписывания)
-                    String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-                    String uploadDir = "uploads/";
-
-                    // Путь для сохранения изображения
-                    java.nio.file.Path path = java.nio.file.Paths.get(uploadDir + fileName);
-                    java.nio.file.Files.createDirectories(path.getParent());
-                    file.transferTo(path.toFile());
-
-                    // Добавляем новый URL изображения в список
-                    imageUrls.add(uploadDir + fileName);
-                }
-            }
-
-            // Обновляем список изображений в продукте
-            product.setImageUrls(imageUrls);
-            productService.updateProduct(product);
-
-            return ResponseEntity.ok("Files uploaded and product updated with image paths!");
+            return ResponseEntity.ok("File uploaded and product updated with image path!");
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("Server error while uploading the files");
+            return ResponseEntity.status(500).body("Server error while uploading the file");
         }
     }
 
