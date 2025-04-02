@@ -1,10 +1,9 @@
 package com.example.smartbasket_backend.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "products")
 public class Product {
 
     @Id
@@ -16,9 +15,10 @@ public class Product {
     private Double price;
 
     @ElementCollection
-    @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
-    @Column(name = "image_url")
-    private List<String> imageUrl; // Массив URL-ов изображений
+    private List<String> imageUrls;
+
+    @Column(name = "image_url") // Добавляем колонку для хранения пути к изображению
+    private String imageUrl;// Массив URL-ов изображений
 
     // getters and setters
 
@@ -55,10 +55,18 @@ public class Product {
     }
 
     public List<String> getImageUrls() {
-        return imageUrl;
+        return imageUrls;
     }
 
     public void setImageUrls(List<String> imageUrls) {
-        this.imageUrl = imageUrls;
+        this.imageUrls = imageUrls;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

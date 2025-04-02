@@ -38,7 +38,7 @@ public class ProductService {
     }
     // Метод обновления продукта
     public Product updateProduct(Product product) {
-        return productRepository.save(product); // Сохраняем изменения в базе данных
+        return productRepository.save(product);
     }
 
 

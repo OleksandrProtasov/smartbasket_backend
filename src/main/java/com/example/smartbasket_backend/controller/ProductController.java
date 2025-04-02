@@ -8,6 +8,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,26 +41,21 @@ public class ProductController {
                 return ResponseEntity.badRequest().body("No file selected");
             }
 
-            // Путь, по которому будет храниться изображение
-            String fileName = file.getOriginalFilename();
-            String uploadDir = "uploads/";
-            String filePath = uploadDir + fileName;
+            // Генерируем уникальное имя файла
+            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+            Path filePath = Paths.get("uploads", fileName);
 
-            // Здесь сохраняем файл в папку uploads
-            file.transferTo(new java.io.File(filePath));
+            // Сохраняем файл на диск
+            Files.createDirectories(filePath.getParent());
+            Files.write(filePath, file.getBytes());
 
-            // Находим товар по ID
+            // Сохраняем путь к файлу в базе данных
             Product product = productService.getProduct(id);
-            if (product == null) {
-                return ResponseEntity.notFound().build();
-            }
+            product.setImageUrl(fileName);
+            productService.updateProduct(product);
 
-            // Сохраняем путь к изображению в товаре
-            product.setImageUrl(filePath);
-            productService.updateProduct(product);  // Этот метод должен обновить товар в базе данных
-
-            return ResponseEntity.ok("File uploaded and product updated with image path!");
-        } catch (Exception e) {
+            return ResponseEntity.ok("File uploaded successfully!");
+        } catch (IOException e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body("Server error while uploading the file");
         }
