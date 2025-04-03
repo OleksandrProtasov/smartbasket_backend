@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,31 +35,54 @@ public class ProductController {
     }
 
     // Загрузка изображения для продукта
-    @PostMapping("/{id}/upload-image")
-    public ResponseEntity<String> uploadImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+    @PostMapping("/{id}/upload-images")
+    public ResponseEntity<String> uploadImages(@PathVariable Long id, @RequestParam("files") MultipartFile[] files) {
         try {
-            if (file.isEmpty()) {
-                return ResponseEntity.badRequest().body("No file selected");
+            if (files.length == 0) {
+                return ResponseEntity.badRequest().body("No files selected");
             }
 
-            // Генерируем уникальное имя файла
-            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-            Path filePath = Paths.get("uploads", fileName);
-
-            // Сохраняем файл на диск
-            Files.createDirectories(filePath.getParent());
-            Files.write(filePath, file.getBytes());
-
-            // Сохраняем путь к файлу в базе данных
             Product product = productService.getProduct(id);
-            product.setImageUrl(fileName);
+            if (product == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            List<String> imageUrls = product.getImageUrls();  // Получаем текущие URL-ы изображений
+
+            for (MultipartFile file : files) {
+                if (!file.isEmpty()) {
+                    // Генерация уникального имени для файла (чтобы избежать перезаписывания)
+                    String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+                    String uploadDir = "uploads/";
+
+                    // Путь для сохранения изображения
+                    java.nio.file.Path path = java.nio.file.Paths.get(uploadDir + fileName);
+                    java.nio.file.Files.createDirectories(path.getParent());
+                    file.transferTo(path.toFile());
+
+                    // Добавляем новый URL изображения в список
+                    imageUrls.add(uploadDir + fileName);
+                }
+            }
+
+            // Обновляем список изображений в продукте
+            product.setImageUrls(imageUrls);
             productService.updateProduct(product);
 
-            return ResponseEntity.ok("File uploaded successfully!");
-        } catch (IOException e) {
+            return ResponseEntity.ok("Files uploaded and product updated with image paths!");
+        } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("Server error while uploading the file");
+            return ResponseEntity.status(500).body("Server error while uploading the files");
         }
+    }
+
+    @GetMapping("/{id}/images")
+    public ResponseEntity<List<String>> getProductImages(@PathVariable Long id) {
+        Product product = productService.getProduct(id);
+        if (product == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(product.getImageUrls() != null ? product.getImageUrls() : new ArrayList<>());
     }
 
     // Получение всех товаров

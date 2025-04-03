@@ -15,10 +15,7 @@ public class Product {
     private Double price;
 
     @ElementCollection
-    private List<String> imageUrls;
-
-    @Column(name = "image_url") // Добавляем колонку для хранения пути к изображению
-    private String imageUrl;// Массив URL-ов изображений
+    private List<String> imageUrls;  // Массив URL-ов изображений
 
     // getters and setters
 
@@ -60,13 +57,5 @@ public class Product {
 
     public void setImageUrls(List<String> imageUrls) {
         this.imageUrls = imageUrls;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
     }
 }
