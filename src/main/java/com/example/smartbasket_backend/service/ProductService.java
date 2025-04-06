@@ -40,6 +40,10 @@ public class ProductService {
     public Product updateProduct(Product product) {
         return productRepository.save(product);
     }
+    // Метод для удаления продукта
+    public void deleteProduct(Long id) {
+        productRepository.deleteById(id);
+    }
 
 
     // Сохранение изображения для продукта

@@ -5,8 +5,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-
 @Entity
+@Table(name = "users")  // чтобы избежать конфликта с зарезервированным словом "user"
 public class User {
 
     @Id
@@ -25,17 +25,20 @@ public class User {
     @Size(min = 6)
     private String password;
 
-    // Конструкторы, геттеры и сеттеры
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.USER; // по умолчанию роль USER
 
     public User() {}
 
-    public User(String name, String email, String password) {
+    public User(String name, String email, String password, Role role) {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     // Геттеры и сеттеры
+
     public Long getId() {
         return id;
     }
@@ -66,5 +69,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

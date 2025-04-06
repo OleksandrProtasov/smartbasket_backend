@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
+    // Дополнительные методы для работы с продуктами
+    void deleteById(Long id);
 }
