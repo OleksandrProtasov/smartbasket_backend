@@ -1,9 +1,29 @@
-// com.example.smartbasket_backend.dto.AuthRequest.java
 package com.example.smartbasket_backend.dto;
 
 public class AuthRequest {
     private String email;
     private String password;
 
-    // геттеры и сеттеры
+    public AuthRequest() {}
+
+    public AuthRequest(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }
